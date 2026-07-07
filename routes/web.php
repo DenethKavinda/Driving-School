@@ -1,32 +1,13 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', function () {
-    return view('home');
+    return Inertia::render('Users/Home');
 });
 
 
-Route::get('/Packages', function () {
-    return view('packages');
-});
-
-Route::get('/Gallery', function () {
-    return view('gallery');
-});
-
-Route::get('/About', function () {
-    return view('about');
-});
-
-Route::get('/Contact', function () {
-    return view('contact');
-});
-
-Route::get('/PracticeExam', function () {
-    return view('practice-exam');
-});
-
-Route::get('/Feedback', function () {
-    return view('feedback');
-});
+require __DIR__ . '/auth.php';
