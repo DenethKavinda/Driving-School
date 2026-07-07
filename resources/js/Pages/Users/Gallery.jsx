@@ -1,9 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../Components/Header";
 import Footer from "../../Components/Footer";
+// Import the native path lookups helper
+import { t } from "../../translations/index";
 
 export default function Gallery() {
+    // Determine initial language from local storage fallback to English
+    const [currentLang, setCurrentLang] = useState(() => {
+        return localStorage.getItem("app_lang") || "en";
+    });
+
     const [modalData, setModalData] = useState({ isOpen: false, category: "" });
+
+    // Dynamic clean shortcut translation handler
+    const translate = (path) => t(path, currentLang);
+
+    useEffect(() => {
+        // Listen to storage changes to keep state synced cleanly
+        const handleLangChange = () => {
+            setCurrentLang(localStorage.getItem("app_lang") || "en");
+        };
+        window.addEventListener("storage", handleLangChange);
+        return () => window.removeEventListener("storage", handleLangChange);
+    }, []);
 
     const imageDatabase = {
         graduates: [
@@ -25,11 +44,12 @@ export default function Gallery() {
         ],
     };
 
+    // Dynamically localized titles for the popup container
     const titleDatabase = {
-        graduates: "Happy Graduates Gallery",
-        fleet: "Our Dual-Controlled Training Vehicles",
-        grounds: "Practice Field Track Layouts",
-        theory: "Theory & Road Rules Classroom",
+        graduates: translate("gallery.title_graduates"),
+        fleet: translate("gallery.title_fleet"),
+        grounds: translate("gallery.title_grounds"),
+        theory: translate("gallery.title_theory"),
     };
 
     const openModal = (cat) => setModalData({ isOpen: true, category: cat });
@@ -38,12 +58,15 @@ export default function Gallery() {
     return (
         <div className="bg-dot-pattern text-slate-800 antialiased min-h-screen flex flex-col justify-between">
             <style>{`
-        .bg-dot-pattern {
-            background-color: #fafbfc;
-            background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
-            background-size: 24px 24px;
-        }
-      `}</style>
+                .bg-dot-pattern {
+                    background-color: #fafbfc;
+                    background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
+                    background-size: 24px 24px;
+                }
+                html[lang="si"] body {
+                    line-height: 1.65 !important;
+                }
+            `}</style>
 
             <Header />
 
@@ -52,18 +75,16 @@ export default function Gallery() {
                     {/* Header */}
                     <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
                         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-indigo-600 border border-slate-200 shadow-sm tracking-wide uppercase">
-                            ⚡ Life at Learnerce
+                            {translate("gallery.page_badge")}
                         </span>
                         <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-                            Our{" "}
+                            {translate("gallery.page_title_part1")}{" "}
                             <span className="text-indigo-600">
-                                Success Gallery
+                                {translate("gallery.page_title_part2")}
                             </span>
                         </h1>
                         <p className="text-slate-500 font-medium leading-relaxed">
-                            Explore real snapshots of our training fields,
-                            vehicle fleets, lecture rooms, and happy students
-                            receiving their driving licenses.
+                            {translate("gallery.page_desc")}
                         </p>
                     </div>
 
@@ -81,15 +102,15 @@ export default function Gallery() {
                                     alt="Graduates"
                                 />
                                 <span className="absolute bottom-3 left-3 bg-slate-900/70 backdrop-blur-md text-white font-extrabold text-[10px] uppercase px-2.5 py-1 rounded-lg tracking-wider">
-                                    License Winners 🏆
+                                    {translate("gallery.label_graduates")}
                                 </span>
                             </div>
                             <div className="pt-4 px-1">
                                 <h3 className="font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors text-base">
-                                    Happy Graduates
+                                    {translate("gallery.card_graduates_title")}
                                 </h3>
                                 <p className="text-xs font-semibold text-slate-400 mt-0.5">
-                                    Click to view photos
+                                    {translate("gallery.click_to_view")}
                                 </p>
                             </div>
                         </div>
@@ -106,15 +127,15 @@ export default function Gallery() {
                                     alt="Vehicles"
                                 />
                                 <span className="absolute bottom-3 left-3 bg-slate-900/70 backdrop-blur-md text-white font-extrabold text-[10px] uppercase px-2.5 py-1 rounded-lg tracking-wider">
-                                    Dual Control 🚗
+                                    {translate("gallery.label_fleet")}
                                 </span>
                             </div>
                             <div className="pt-4 px-1">
                                 <h3 className="font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors text-base">
-                                    Training Vehicles
+                                    {translate("gallery.card_fleet_title")}
                                 </h3>
                                 <p className="text-xs font-semibold text-slate-400 mt-0.5">
-                                    Click to view photos
+                                    {translate("gallery.click_to_view")}
                                 </p>
                             </div>
                         </div>
@@ -131,15 +152,15 @@ export default function Gallery() {
                                     alt="Grounds"
                                 />
                                 <span className="absolute bottom-3 left-3 bg-slate-900/70 backdrop-blur-md text-white font-extrabold text-[10px] uppercase px-2.5 py-1 rounded-lg tracking-wider">
-                                    Practice Tracks 🛣️
+                                    {translate("gallery.label_grounds")}
                                 </span>
                             </div>
                             <div className="pt-4 px-1">
                                 <h3 className="font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors text-base">
-                                    Practice Grounds
+                                    {translate("gallery.card_grounds_title")}
                                 </h3>
                                 <p className="text-xs font-semibold text-slate-400 mt-0.5">
-                                    Click to view photos
+                                    {translate("gallery.click_to_view")}
                                 </p>
                             </div>
                         </div>
@@ -156,15 +177,15 @@ export default function Gallery() {
                                     alt="Theory"
                                 />
                                 <span className="absolute bottom-3 left-3 bg-slate-900/70 backdrop-blur-md text-white font-extrabold text-[10px] uppercase px-2.5 py-1 rounded-lg tracking-wider">
-                                    Exam Prep 📝
+                                    {translate("gallery.label_theory")}
                                 </span>
                             </div>
                             <div className="pt-4 px-1">
                                 <h3 className="font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors text-base">
-                                    Lecture Sessions
+                                    {translate("gallery.card_theory_title")}
                                 </h3>
                                 <p className="text-xs font-semibold text-slate-400 mt-0.5">
-                                    Click to view photos
+                                    {translate("gallery.click_to_view")}
                                 </p>
                             </div>
                         </div>
@@ -188,8 +209,7 @@ export default function Gallery() {
                                     {titleDatabase[modalData.category]}
                                 </h2>
                                 <p className="text-xs font-semibold text-slate-400 mt-0.5">
-                                    Click anywhere outside or the close button
-                                    to return
+                                    {translate("gallery.modal_hint")}
                                 </p>
                             </div>
                             <button

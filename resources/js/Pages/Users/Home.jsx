@@ -1,14 +1,30 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../Components/Header";
 import Footer from "../../Components/Footer";
+// Import the native path lookups helper
+import { t } from "../../translations/index";
 
 export default function Home() {
+    // Determine initial language from local storage fallback to English
+    const [currentLang, setCurrentLang] = useState(() => {
+        return localStorage.getItem("app_lang") || "en";
+    });
+
     // Metric States for the Count-Up Animation Engine
     const [passRate, setPassRate] = useState(0);
     const [students, setStudents] = useState(0);
     const [instructors, setInstructors] = useState(0);
 
+    // Dynamic clean shortcut translation handler
+    const translate = (path) => t(path, currentLang);
+
     useEffect(() => {
+        // Handle changes to localStorage manually if changed on the same page
+        const handleLangChange = () => {
+            setCurrentLang(localStorage.getItem("app_lang") || "en");
+        };
+        window.addEventListener("storage", handleLangChange);
+
         // --- 1. Intersection Observer for Scroll-Driven Animations ---
         const reveals = document.querySelectorAll(".reveal-on-scroll");
 
@@ -20,13 +36,13 @@ export default function Home() {
                     }
                 });
             },
-            { threshold: 0.15 }, // Triggers when 15% of the element enters the viewport
+            { threshold: 0.15 },
         );
 
         reveals.forEach((el) => observer.observe(el));
 
         // --- 2. Synchronized 5-Second Count-Up Animation Engine ---
-        const animationDuration = 5000; // 5 Seconds
+        const animationDuration = 5000;
         const targets = { passRate: 98, students: 10000, instructors: 15 };
         let frameId;
         const startTime = performance.now();
@@ -35,7 +51,6 @@ export default function Home() {
             const elapsedTime = currentTime - startTime;
             const progress = Math.min(elapsedTime / animationDuration, 1);
 
-            // Linear interpolation progress calculations
             setPassRate(Math.floor(progress * targets.passRate));
             setStudents(Math.floor(progress * targets.students));
             setInstructors(Math.floor(progress * targets.instructors));
@@ -43,7 +58,6 @@ export default function Home() {
             if (progress < 1) {
                 frameId = requestAnimationFrame(updateCounters);
             } else {
-                // Enforce absolute precise final targets when animation finishes
                 setPassRate(targets.passRate);
                 setStudents(targets.students);
                 setInstructors(targets.instructors);
@@ -52,37 +66,38 @@ export default function Home() {
 
         frameId = requestAnimationFrame(updateCounters);
 
-        // Cleanup animations and observers on unmount
         return () => {
             observer.disconnect();
             cancelAnimationFrame(frameId);
+            window.removeEventListener("storage", handleLangChange);
         };
     }, []);
 
     return (
         <div className="bg-dot-pattern text-slate-800 antialiased min-h-screen flex flex-col justify-between">
-            {/* Scope-compiled custom styles wrapper */}
             <style>{`
-        .bg-dot-pattern {
-            background-color: #fafbfc;
-            background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
-            background-size: 24px 24px;
-        }
-        .reveal-on-scroll {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .reveal-on-scroll.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-      `}</style>
+                .bg-dot-pattern {
+                    background-color: #fafbfc;
+                    background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
+                    background-size: 24px 24px;
+                }
+                .reveal-on-scroll {
+                    opacity: 0;
+                    transform: translateY(20px);
+                    transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+                }
+                .reveal-on-scroll.active {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+                /* Enforce matching line heights for Sinhala reading structures */
+                html[lang="si"] body {
+                    line-height: 1.65 !important;
+                }
+            `}</style>
 
-            {/* Include Header Component */}
             <Header />
 
-            {/* Main Content Container */}
             <main className="flex-grow overflow-hidden">
                 {/* 1. Hero Section */}
                 <section className="relative overflow-hidden pt-12 pb-20 lg:pt-24 lg:pb-32 reveal-on-scroll">
@@ -91,19 +106,16 @@ export default function Home() {
                             {/* Hero Left Content */}
                             <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-indigo-600 border border-slate-200 shadow-sm tracking-wide uppercase transform hover:scale-105 transition-transform duration-300">
-                                    ⚡ Safety & Defensive Driving Training
+                                    {translate("home.hero_badge")}
                                 </span>
                                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
-                                    Drive Smart. <br />
-                                    <span class="text-indigo-600">
-                                        Drive Confidently.
+                                    {translate("home.hero_title_part1")} <br />
+                                    <span className="text-indigo-600">
+                                        {translate("home.hero_title_part2")}
                                     </span>
                                 </h1>
                                 <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
-                                    Skip the exam stress. Our tailored
-                                    instructional road mapping sets beginners up
-                                    for seamless licensing and lifetime safety
-                                    execution.
+                                    {translate("home.hero_desc")}
                                 </p>
 
                                 {/* CTAs */}
@@ -112,19 +124,19 @@ export default function Home() {
                                         href="#"
                                         className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-600/10 transition-all duration-150 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 text-center"
                                     >
-                                        Book Your Package Now
+                                        {translate("home.btn_book")}
                                     </a>
                                     <a
                                         href="/PracticeExam"
                                         className="px-8 py-4 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-2xl shadow-sm border border-indigo-100 transition-all duration-150 transform active:scale-95 text-center"
                                     >
-                                        Practice Exam
+                                        {translate("home.btn_exam")}
                                     </a>
                                     <a
                                         href="/Feedback"
                                         className="px-8 py-4 bg-white hover:bg-slate-50 text-slate-600 font-bold rounded-2xl shadow-sm border border-slate-200 transition-all duration-150 transform active:scale-95 text-center"
                                     >
-                                        Share Feedback
+                                        {translate("home.btn_feedback")}
                                     </a>
                                 </div>
 
@@ -135,7 +147,7 @@ export default function Home() {
                                             {passRate}%
                                         </p>
                                         <p className="text-xs text-slate-500 font-bold tracking-wider uppercase mt-1">
-                                            Pass Rate
+                                            {translate("home.metric_pass")}
                                         </p>
                                     </div>
                                     <div>
@@ -143,7 +155,7 @@ export default function Home() {
                                             {students.toLocaleString()}+
                                         </p>
                                         <p className="text-xs text-slate-500 font-bold tracking-wider uppercase mt-1">
-                                            Students
+                                            {translate("home.metric_students")}
                                         </p>
                                     </div>
                                     <div>
@@ -151,7 +163,7 @@ export default function Home() {
                                             {instructors}+
                                         </p>
                                         <p className="text-xs text-slate-500 font-bold tracking-wider uppercase mt-1">
-                                            Instructors
+                                            {translate("home.metric_coaches")}
                                         </p>
                                     </div>
                                 </div>
@@ -161,9 +173,8 @@ export default function Home() {
                             <div className="lg:col-span-6 relative group">
                                 <div className="absolute inset-0 bg-indigo-600/5 rounded-3xl blur-xl group-hover:bg-indigo-600/10 transition-all duration-500"></div>
                                 <div className="bg-white p-4 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200/60 relative transform group-hover:scale-[1.01] transition-all duration-500 ease-out">
-                                    {/* Decorative Floater Tag */}
                                     <div className="absolute -top-3 -right-3 bg-indigo-600 text-white font-bold text-xs py-1.5 px-3 rounded-xl shadow-md transform rotate-6 z-20 animate-pulse">
-                                        New Fleet 🚗
+                                        {translate("home.video_badge")}
                                     </div>
 
                                     <div className="bg-slate-50 aspect-[4/3] rounded-2xl overflow-hidden flex items-center justify-center relative border border-slate-100 shadow-inner z-10">
@@ -181,12 +192,13 @@ export default function Home() {
                                             <div className="flex items-center gap-2.5">
                                                 <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
                                                 <p className="text-xs font-bold text-slate-700">
-                                                    Reservations open for this
-                                                    week
+                                                    {translate(
+                                                        "home.video_status",
+                                                    )}
                                                 </p>
                                             </div>
                                             <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
-                                                Check Slots
+                                                {translate("home.video_action")}
                                             </span>
                                         </div>
                                     </div>
@@ -201,11 +213,10 @@ export default function Home() {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center max-w-2xl mx-auto space-y-2 mb-16">
                             <h2 className="text-3xl font-black text-slate-900 tracking-tight">
-                                Structured For Your Success
+                                {translate("home.feat_heading")}
                             </h2>
                             <p className="text-slate-500 font-medium">
-                                We design the process completely around your
-                                speed, comfort, and schedule.
+                                {translate("home.feat_subheading")}
                             </p>
                         </div>
 
@@ -217,12 +228,10 @@ export default function Home() {
                                     🛡️
                                 </div>
                                 <h3 className="text-lg font-bold text-slate-900 mb-2">
-                                    Dual-Controlled Fleets
+                                    {translate("home.card1_title")}
                                 </h3>
                                 <p className="text-sm text-slate-600 leading-relaxed font-medium">
-                                    Learn safely with advanced vehicles modified
-                                    to keep both you and the instructor
-                                    perfectly secure.
+                                    {translate("home.card1_desc")}
                                 </p>
                             </div>
 
@@ -232,12 +241,10 @@ export default function Home() {
                                     ⏰
                                 </div>
                                 <h3 className="text-lg font-bold text-slate-900 mb-2">
-                                    Flexible Hours
+                                    {translate("home.card2_title")}
                                 </h3>
                                 <p className="text-sm text-slate-600 leading-relaxed font-medium">
-                                    Schedule training slots early mornings,
-                                    weekends, or late evenings around your
-                                    university or work routine.
+                                    {translate("home.card2_desc")}
                                 </p>
                             </div>
 
@@ -247,12 +254,10 @@ export default function Home() {
                                     🎓
                                 </div>
                                 <h3 className="text-lg font-bold text-slate-900 mb-2">
-                                    Certified Guidance
+                                    {translate("home.card3_title")}
                                 </h3>
                                 <p className="text-sm text-slate-600 leading-relaxed font-medium">
-                                    Gain access to certified professional male
-                                    and female instruction styles calibrated
-                                    perfectly to passing metrics.
+                                    {translate("home.card3_desc")}
                                 </p>
                             </div>
                         </div>
@@ -260,7 +265,6 @@ export default function Home() {
                 </section>
             </main>
 
-            {/* Include Footer Component */}
             <Footer />
         </div>
     );

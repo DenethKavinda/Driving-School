@@ -1,13 +1,32 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+// Import the native path lookups helper
+import { t } from "../translations/index";
 
 export default function Footer() {
+    // Determine initial language from local storage fallback to English
+    const [currentLang, setCurrentLang] = useState(() => {
+        return localStorage.getItem("app_lang") || "en";
+    });
+
+    // Dynamic clean shortcut translation handler
+    const translate = (path) => t(path, currentLang);
+
+    useEffect(() => {
+        // Listen to storage changes to keep state synced cleanly across views
+        const handleLangChange = () => {
+            setCurrentLang(localStorage.getItem("app_lang") || "en");
+        };
+        window.addEventListener("storage", handleLangChange);
+        return () => window.removeEventListener("storage", handleLangChange);
+    }, []);
+
     return (
         <footer className="bg-white border-t border-slate-200/80 pt-16 pb-8 relative z-10 w-full mt-auto">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Section: Leadership & Management */}
                 <div className="pb-12 border-b border-slate-100 mb-12">
                     <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-6 md:text-left text-center">
-                        Our Core Leadership & Management Team
+                        {translate("footer.team_heading")}
                     </h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/50 hover:shadow-md transition-all h-auto min-h-[88px]">
@@ -17,11 +36,11 @@ export default function Footer() {
                                 className="w-14 h-14 rounded-xl object-cover shadow-sm border border-slate-200 flex-shrink-0"
                             />
                             <div>
-                                <h5 className="text-sm font-bold text-slate-900">
+                                <h5 className="text-sm font-bold text-slate-900 notranslate">
                                     Sarah Wickrema
                                 </h5>
                                 <p className="text-xs text-indigo-600 font-semibold">
-                                    Senior Car Coach & Managing Director
+                                    {translate("footer.role_sarah")}
                                 </p>
                             </div>
                         </div>
@@ -33,11 +52,11 @@ export default function Footer() {
                                 className="w-14 h-14 rounded-xl object-cover shadow-sm border border-slate-200 flex-shrink-0"
                             />
                             <div>
-                                <h5 className="text-sm font-bold text-slate-900">
+                                <h5 className="text-sm font-bold text-slate-900 notranslate">
                                     David Perera
                                 </h5>
                                 <p className="text-xs text-indigo-600 font-semibold">
-                                    Dual Transmission Specialist
+                                    {translate("footer.role_david")}
                                 </p>
                             </div>
                         </div>
@@ -49,11 +68,11 @@ export default function Footer() {
                                 className="w-14 h-14 rounded-xl object-cover shadow-sm border border-slate-200 flex-shrink-0"
                             />
                             <div>
-                                <h5 className="text-sm font-bold text-slate-900">
+                                <h5 className="text-sm font-bold text-slate-900 notranslate">
                                     Jude Silva
                                 </h5>
                                 <p className="text-xs text-indigo-600 font-semibold">
-                                    Motorcycle Training Operations Lead
+                                    {translate("footer.role_jude")}
                                 </p>
                             </div>
                         </div>
@@ -75,16 +94,14 @@ export default function Footer() {
                             </span>
                         </div>
                         <p className="text-xs font-medium text-slate-500 leading-relaxed max-w-sm">
-                            Empowering individuals with modern driving mechanics
-                            and lifelong safety habits. Register today and get
-                            your license seamlessly.
+                            {translate("footer.branding_desc")}
                         </p>
                     </div>
 
                     {/* Contact Information Column */}
                     <div className="md:col-span-4 space-y-4">
                         <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest">
-                            Connect With Us
+                            {translate("footer.connect_heading")}
                         </h4>
                         <div className="space-y-3">
                             <a
@@ -124,10 +141,10 @@ export default function Footer() {
                     {/* Social Channels Column */}
                     <div className="md:col-span-3 space-y-4 md:text-right">
                         <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest">
-                            Follow & Share
+                            {translate("footer.social_heading")}
                         </h4>
                         <p className="text-[11px] font-medium text-slate-400">
-                            Join our digital community of safe drivers.
+                            {translate("footer.social_desc")}
                         </p>
 
                         <div className="flex items-center gap-2 md:justify-end pt-1">
@@ -160,7 +177,7 @@ export default function Footer() {
                             </a>
                         </div>
                         <p className="text-[10px] font-medium text-slate-400 italic">
-                            Mon - Sat: 10:00 AM - 09:00 PM
+                            {translate("footer.working_hours")}
                         </p>
                     </div>
                 </div>
@@ -176,13 +193,13 @@ export default function Footer() {
                             href="#"
                             className="hover:text-slate-600 transition-colors"
                         >
-                            Terms of Service
+                            {translate("footer.terms")}
                         </a>
                         <a
                             href="#"
                             className="hover:text-slate-600 transition-colors"
                         >
-                            Privacy Policy
+                            {translate("footer.privacy")}
                         </a>
                     </div>
                 </div>

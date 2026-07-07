@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../Components/Header";
 import Footer from "../../Components/Footer";
+// Import the native path lookups helper
+import { t } from "../../translations/index";
 
 export default function Feedback() {
+    // Determine initial language from local storage fallback to English
+    const [currentLang, setCurrentLang] = useState(() => {
+        return localStorage.getItem("app_lang") || "en";
+    });
+
     const [rating, setRating] = useState(0);
     const [hoverRating, setHoverRating] = useState(0);
     const [selectedChip, setSelectedChip] = useState("");
@@ -10,17 +17,25 @@ export default function Feedback() {
     const [instructor, setInstructor] = useState("");
     const [comments, setComments] = useState("");
 
+    // Dynamic clean shortcut translation handler
+    const translate = (path) => t(path, currentLang);
+
+    useEffect(() => {
+        // Listen to storage changes to keep state synced cleanly across views
+        const handleLangChange = () => {
+            setCurrentLang(localStorage.getItem("app_lang") || "en");
+        };
+        window.addEventListener("storage", handleLangChange);
+        return () => window.removeEventListener("storage", handleLangChange);
+    }, []);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (rating === 0) {
-            alert(
-                "Please click a star rating configuration metric to provide a numeric score before submitting.",
-            );
+            alert(translate("feedback.alert_no_rating"));
             return;
         }
-        alert(
-            "Thank you! Your learning review asset record has been received successfully.",
-        );
+        alert(translate("feedback.alert_success"));
         window.location.href = "/";
     };
 
@@ -34,30 +49,32 @@ export default function Feedback() {
     return (
         <div className="bg-dot-pattern text-slate-800 antialiased min-h-screen flex flex-col justify-between">
             <style>{`
-        .bg-dot-pattern {
-            background-color: #fafbfc;
-            background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
-            background-size: 24px 24px;
-        }
-      `}</style>
+                .bg-dot-pattern {
+                    background-color: #fafbfc;
+                    background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
+                    background-size: 24px 24px;
+                }
+                html[lang="si"] body {
+                    line-height: 1.65 !important;
+                }
+            `}</style>
+
             <Header />
 
             <main className="flex-grow pt-12 pb-24">
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center max-w-2xl mx-auto space-y-3 mb-12">
                         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-600 border border-indigo-100 uppercase tracking-wide">
-                            💬 Student Testimonials
+                            {translate("feedback.page_badge")}
                         </span>
                         <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-                            Share Your{" "}
+                            {translate("feedback.page_title_part1")}{" "}
                             <span className="text-indigo-600">
-                                Learning Experience
+                                {translate("feedback.page_title_part2")}
                             </span>
                         </h1>
                         <p className="text-sm font-medium text-slate-500 leading-relaxed">
-                            Your valuable feedback helps us constantly refine
-                            our defensive instruction strategies and modern
-                            simulator frameworks.
+                            {translate("feedback.page_desc")}
                         </p>
                     </div>
 
@@ -66,7 +83,7 @@ export default function Feedback() {
                             {/* Star Panel */}
                             <div className="space-y-2 text-center pb-4 border-b border-slate-100">
                                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
-                                    Overall Experience Rating
+                                    {translate("feedback.label_rating")}
                                 </label>
                                 <div className="flex items-center justify-center gap-2 pt-1">
                                     {[1, 2, 3, 4, 5].map((star) => (
@@ -98,7 +115,7 @@ export default function Feedback() {
                                         htmlFor="student_name"
                                         className="text-xs font-bold text-slate-700 uppercase tracking-wider"
                                     >
-                                        Your Name
+                                        {translate("feedback.label_name")}
                                     </label>
                                     <input
                                         type="text"
@@ -117,7 +134,7 @@ export default function Feedback() {
                                         htmlFor="assigned_instructor"
                                         className="text-xs font-bold text-slate-700 uppercase tracking-wider"
                                     >
-                                        Your Primary Instructor
+                                        {translate("feedback.label_instructor")}
                                     </label>
                                     <div className="relative">
                                         <select
@@ -130,16 +147,18 @@ export default function Feedback() {
                                             className="w-full px-4 py-3.5 rounded-xl bg-slate-50/50 border border-slate-200 text-sm focus:outline-none appearance-none cursor-pointer"
                                         >
                                             <option value="" disabled>
-                                                Select your coach
+                                                {translate(
+                                                    "feedback.opt_instructor_placeholder",
+                                                )}
                                             </option>
                                             <option value="sarah">
-                                                Instructor Sarah Wickrema
+                                                Sarah Wickrema
                                             </option>
                                             <option value="david">
-                                                Instructor David Perera
+                                                David Perera
                                             </option>
                                             <option value="jude">
-                                                Instructor Jude Silva
+                                                Jude Silva
                                             </option>
                                         </select>
                                         <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400">
@@ -152,7 +171,7 @@ export default function Feedback() {
                             {/* Package Selector */}
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
-                                    Completed Training Package
+                                    {translate("feedback.label_package")}
                                 </label>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                     <div
@@ -160,7 +179,7 @@ export default function Feedback() {
                                         className={chipClass("combo")}
                                     >
                                         <span className="text-xs font-bold block">
-                                            🚗 + 🏍️ Premium Combo
+                                            {translate("feedback.pkg_combo")}
                                         </span>
                                     </div>
                                     <div
@@ -168,7 +187,7 @@ export default function Feedback() {
                                         className={chipClass("car")}
                                     >
                                         <span className="text-xs font-bold block">
-                                            Car Only Standard
+                                            {translate("feedback.pkg_car")}
                                         </span>
                                     </div>
                                     <div
@@ -178,7 +197,7 @@ export default function Feedback() {
                                         className={chipClass("express")}
                                     >
                                         <span className="text-xs font-bold block">
-                                            ⚡ Express Refresher
+                                            {translate("feedback.pkg_express")}
                                         </span>
                                     </div>
                                 </div>
@@ -189,7 +208,7 @@ export default function Feedback() {
                                     htmlFor="feedback_comments"
                                     className="text-xs font-bold text-slate-700 uppercase tracking-wider"
                                 >
-                                    Your Review / Comments
+                                    {translate("feedback.label_comments")}
                                 </label>
                                 <textarea
                                     id="feedback_comments"
@@ -199,7 +218,7 @@ export default function Feedback() {
                                     onChange={(e) =>
                                         setComments(e.target.value)
                                     }
-                                    placeholder="Tell us about your experience..."
+                                    placeholder="..."
                                     className="w-full px-4 py-3.5 rounded-xl bg-slate-50/50 border border-slate-200 text-sm focus:outline-none focus:border-indigo-500 focus:bg-white resize-none transition-all"
                                 ></textarea>
                             </div>
@@ -208,7 +227,7 @@ export default function Feedback() {
                                 type="submit"
                                 className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition-all active:scale-[0.99]"
                             >
-                                Submit My Feedback
+                                {translate("feedback.btn_submit")}
                             </button>
                         </form>
                     </div>

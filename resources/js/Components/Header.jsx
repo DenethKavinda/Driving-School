@@ -1,61 +1,21 @@
 import React, { useState, useEffect } from "react";
+// Import your custom translation lookups helper
+import { t } from "../translations/index";
 
 export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
-    const [currentLang, setCurrentLang] = useState("en");
 
-    // Read the cookie state on mount
-    useEffect(() => {
-        const cookies = document.cookie.split(";");
-        let detectedLang = "en";
-        for (let i = 0; i < cookies.length; i++) {
-            let c = cookies[i].trim();
-            if (c.indexOf("googtrans=") === 0 && c.includes("/si")) {
-                detectedLang = "si";
-            }
-        }
-        setCurrentLang(detectedLang);
-
-        // Initialize Google Translate script safely if not already present
-        if (!window.googleTranslateElementInit) {
-            window.googleTranslateElementInit = () => {
-                new window.google.translate.TranslateElement(
-                    {
-                        pageLanguage: "en",
-                        includedLanguages: "en,si",
-                        layout: window.google.translate.TranslateElement
-                            .InlineLayout.SIMPLE,
-                        autoDisplay: false,
-                    },
-                    "google_translate_element",
-                );
-            };
-
-            const script = document.createElement("script");
-            script.type = "text/javascript";
-            script.src =
-                "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-            document.body.appendChild(script);
-        }
-    }, []);
+    // Track the active language globally or in local state
+    const [currentLang, setCurrentLang] = useState(() => {
+        return localStorage.getItem("app_lang") || "en";
+    });
 
     const changeLanguage = (langCode) => {
-        let cookieValue = "/en/" + langCode;
-        if (langCode === "en") {
-            document.cookie =
-                "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            document.cookie =
-                "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" +
-                window.location.hostname;
-        } else {
-            document.cookie = "googtrans=" + cookieValue + "; path=/;";
-            document.cookie =
-                "googtrans=" +
-                cookieValue +
-                "; path=/; domain=" +
-                window.location.hostname;
-        }
+        localStorage.setItem("app_lang", langCode);
+        setCurrentLang(langCode);
+        setIsLangDropdownOpen(false);
+        // Reload to propagate language updates down to other components cleanly
         window.location.reload();
     };
 
@@ -63,20 +23,13 @@ export default function Header() {
         changeLanguage(currentLang === "en" ? "si" : "en");
     };
 
-    // Mocking active path logic (replace with your router's active path matcher if using react-router)
     const isCurrentPath = (path) => window.location.pathname === path;
+
     const linkClass = (path) =>
         `inline-block text-sm transition-all duration-150 transform active:scale-95 ${
             isCurrentPath(path)
                 ? "font-bold text-indigo-600"
                 : "font-semibold text-slate-600 hover:text-slate-900"
-        }`;
-
-    const mobileLinkClass = (path) =>
-        `block px-3 py-2.5 rounded-lg text-base transition-all duration-150 transform active:scale-[0.98] ${
-            isCurrentPath(path)
-                ? "font-bold text-indigo-600 bg-indigo-50/50"
-                : "font-semibold text-slate-700 hover:bg-slate-50"
         }`;
 
     return (
@@ -96,35 +49,35 @@ export default function Header() {
                             </span>
                         </div>
 
-                        {/* Desktop Navigation */}
+                        {/* Desktop Navigation Links - Translated natively */}
                         <div className="hidden md:flex items-center space-x-5 lg:space-x-8">
                             <a href="/" className={linkClass("/")}>
-                                Home
+                                {t("nav.home", currentLang)}
                             </a>
                             <a
                                 href="/Packages"
                                 className={linkClass("/Packages")}
                             >
-                                Our Packages
+                                {t("nav.packages", currentLang)}
                             </a>
                             <a
                                 href="/Gallery"
                                 className={linkClass("/Gallery")}
                             >
-                                Gallery
+                                {t("nav.gallery", currentLang)}
                             </a>
                             <a href="/About" className={linkClass("/About")}>
-                                About Us
+                                {t("nav.about", currentLang)}
                             </a>
                             <a
                                 href="/Contact"
                                 className={linkClass("/Contact")}
                             >
-                                Contact Us
+                                {t("nav.contact", currentLang)}
                             </a>
                         </div>
 
-                        {/* Right Action Menu */}
+                        {/* Language Switcher Dropdown Action */}
                         <div className="hidden md:flex items-center space-x-4">
                             <div className="relative inline-block text-left">
                                 <button
@@ -184,22 +137,9 @@ export default function Header() {
                                     </div>
                                 )}
                             </div>
-
-                            <a
-                                href="#"
-                                className="inline-block text-sm font-semibold text-slate-700 hover:text-slate-900 px-4 py-2 transition-all duration-150 transform active:scale-95"
-                            >
-                                Login
-                            </a>
-                            <a
-                                href="#"
-                                className="inline-block text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 px-5 py-2.5 rounded-xl transition-all duration-150 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 shadow-sm"
-                            >
-                                Sign Up
-                            </a>
                         </div>
 
-                        {/* Mobile Actions */}
+                        {/* Mobile View Toggle Buttons */}
                         <div className="md:hidden flex items-center space-x-2">
                             <button
                                 type="button"
@@ -236,77 +176,7 @@ export default function Header() {
                         </div>
                     </div>
                 </div>
-
-                {/* Mobile Navigation Panel */}
-                {isMobileMenuOpen && (
-                    <div className="md:hidden border-t border-slate-200 bg-white px-4 pt-2 pb-4 space-y-1">
-                        <a href="/" className={mobileLinkClass("/")}>
-                            Home
-                        </a>
-                        <a
-                            href="/Packages"
-                            className={mobileLinkClass("/Packages")}
-                        >
-                            Our Packages
-                        </a>
-                        <a
-                            href="/Gallery"
-                            className={mobileLinkClass("/Gallery")}
-                        >
-                            Gallery
-                        </a>
-                        <a href="/About" className={mobileLinkClass("/About")}>
-                            About Us
-                        </a>
-                        <a
-                            href="/Contact"
-                            className={mobileLinkClass("/Contact")}
-                        >
-                            Contact Us
-                        </a>
-
-                        <div className="pt-4 border-t border-slate-200 flex flex-col gap-2">
-                            <a
-                                href="#"
-                                className="w-full text-center py-2.5 rounded-lg font-semibold text-slate-700 hover:bg-slate-50 transition-all duration-150 transform active:scale-[0.98] active:bg-slate-100"
-                            >
-                                Login
-                            </a>
-                            <a
-                                href="#"
-                                className="w-full text-center py-2.5 rounded-lg font-bold text-white bg-slate-900 transition-all duration-150 transform active:scale-[0.98]"
-                            >
-                                Book Now
-                            </a>
-                        </div>
-                    </div>
-                )}
             </nav>
-
-            {/* Hidden container for Google Translate element */}
-            <div id="google_translate_element" className="hidden"></div>
-
-            <style>{`
-        .skiptranslate iframe,
-        .goog-te-banner-frame,
-        #goog-gt-tt,
-        .goog-te-balloon-frame {
-            display: none !important;
-        }
-        body {
-            top: 0px !important;
-        }
-        html[lang="si"] body,
-        .translated-ltr body {
-            line-height: 1.65 !important;
-            font-family: 'Iskoola Pota', 'Noto Sans Sinhala', sans-serif !important;
-        }
-        html[lang="si"] h1, html[lang="si"] h2, html[lang="si"] h3,
-        .translated-ltr h1, .translated-ltr h2, .translated-ltr h3 {
-            letter-spacing: 0.01em !important;
-            font-size: 94% !important;
-        }
-      `}</style>
         </>
     );
 }

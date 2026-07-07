@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../Components/Header";
 import Footer from "../../Components/Footer";
+// Import the native path lookups helper
+import { t } from "../../translations/index";
 
 export default function Contact() {
+    // Determine initial language from local storage fallback to English
+    const [currentLang, setCurrentLang] = useState(() => {
+        return localStorage.getItem("app_lang") || "en";
+    });
+
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -11,7 +18,16 @@ export default function Contact() {
         message: "",
     });
 
+    // Dynamic clean shortcut translation handler
+    const translate = (path) => t(path, currentLang);
+
     useEffect(() => {
+        // Listen to storage changes to keep state synced cleanly across views
+        const handleLangChange = () => {
+            setCurrentLang(localStorage.getItem("app_lang") || "en");
+        };
+        window.addEventListener("storage", handleLangChange);
+
         const reveals = document.querySelectorAll(".reveal-on-scroll");
         const observer = new IntersectionObserver(
             (entries) => {
@@ -23,7 +39,11 @@ export default function Contact() {
             { threshold: 0.15 },
         );
         reveals.forEach((el) => observer.observe(el));
-        return () => observer.disconnect();
+
+        return () => {
+            observer.disconnect();
+            window.removeEventListener("storage", handleLangChange);
+        };
     }, []);
 
     const handleChange = (e) => {
@@ -33,28 +53,31 @@ export default function Contact() {
     const handleSubmit = (e) => {
         e.preventDefault();
         alert(
-            `Thank you ${formData.name}! Your driving layout message query has been safely submitted.`,
+            `${translate("contact.alert_success_prefix")} ${formData.name}! ${translate("contact.alert_success_suffix")}`,
         );
     };
 
     return (
         <div className="bg-dot-pattern text-slate-800 antialiased min-h-screen flex flex-col justify-between">
             <style>{`
-        .bg-dot-pattern {
-            background-color: #fafbfc;
-            background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
-            background-size: 24px 24px;
-        }
-        .reveal-on-scroll {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .reveal-on-scroll.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-      `}</style>
+                .bg-dot-pattern {
+                    background-color: #fafbfc;
+                    background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
+                    background-size: 24px 24px;
+                }
+                .reveal-on-scroll {
+                    opacity: 0;
+                    transform: translateY(20px);
+                    transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+                }
+                .reveal-on-scroll.active {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+                html[lang="si"] body {
+                    line-height: 1.65 !important;
+                }
+            `}</style>
 
             <Header />
 
@@ -62,18 +85,16 @@ export default function Contact() {
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center max-w-2xl mx-auto space-y-3 mb-16 reveal-on-scroll">
                         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-indigo-600 border border-slate-200 shadow-sm tracking-wide uppercase">
-                            ✉️ Get In Touch
+                            {translate("contact.page_badge")}
                         </span>
                         <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-                            We're Here to{" "}
+                            {translate("contact.page_title_part1")}{" "}
                             <span className="text-indigo-600">
-                                Help You Drive
+                                {translate("contact.page_title_part2")}
                             </span>
                         </h1>
                         <p className="text-slate-500 font-medium leading-relaxed">
-                            Have questions about our training metrics,
-                            scheduling hours, or license processing? Drop us a
-                            message or contact us directly.
+                            {translate("contact.page_desc")}
                         </p>
                     </div>
 
@@ -81,7 +102,7 @@ export default function Contact() {
                         {/* Form */}
                         <div className="lg:col-span-7 bg-white p-8 md:p-10 rounded-3xl border border-slate-200/80 shadow-md shadow-slate-100/60 hover:shadow-xl transition-all duration-500">
                             <h2 className="text-xl font-black text-slate-900 mb-6">
-                                Send Us a Message
+                                {translate("contact.form_heading")}
                             </h2>
 
                             <form onSubmit={handleSubmit} className="space-y-5">
@@ -90,7 +111,7 @@ export default function Contact() {
                                         htmlFor="name"
                                         className="text-xs font-bold text-slate-700 uppercase tracking-wider"
                                     >
-                                        Full Name
+                                        {translate("contact.label_name")}
                                     </label>
                                     <input
                                         type="text"
@@ -110,7 +131,7 @@ export default function Contact() {
                                             htmlFor="email"
                                             className="text-xs font-bold text-slate-700 uppercase tracking-wider"
                                         >
-                                            Email Address
+                                            {translate("contact.label_email")}
                                         </label>
                                         <input
                                             type="email"
@@ -128,7 +149,7 @@ export default function Contact() {
                                             htmlFor="phone"
                                             className="text-xs font-bold text-slate-700 uppercase tracking-wider"
                                         >
-                                            Contact Number
+                                            {translate("contact.label_phone")}
                                         </label>
                                         <input
                                             type="tel"
@@ -148,7 +169,7 @@ export default function Contact() {
                                         htmlFor="vehicle_type"
                                         className="text-xs font-bold text-slate-700 uppercase tracking-wider"
                                     >
-                                        Interested Vehicle Category
+                                        {translate("contact.label_vehicle")}
                                     </label>
                                     <div className="relative">
                                         <select
@@ -160,19 +181,29 @@ export default function Contact() {
                                             className="w-full px-4 py-3.5 rounded-xl bg-slate-50/50 border border-slate-200 font-medium text-sm text-slate-700 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all appearance-none cursor-pointer"
                                         >
                                             <option value="" disabled>
-                                                Select a category
+                                                {translate(
+                                                    "contact.opt_placeholder",
+                                                )}
                                             </option>
                                             <option value="car_auto">
-                                                Light Vehicle (Car - Auto)
+                                                {translate(
+                                                    "contact.opt_car_auto",
+                                                )}
                                             </option>
                                             <option value="car_manual">
-                                                Light Vehicle (Car - Manual)
+                                                {translate(
+                                                    "contact.opt_car_manual",
+                                                )}
                                             </option>
                                             <option value="dual_combo">
-                                                Dual Combo (Car + Motorbike)
+                                                {translate(
+                                                    "contact.opt_dual_combo",
+                                                )}
                                             </option>
                                             <option value="express_prep">
-                                                Express Exam Refresher Track
+                                                {translate(
+                                                    "contact.opt_express",
+                                                )}
                                             </option>
                                         </select>
                                         <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400">
@@ -186,7 +217,7 @@ export default function Contact() {
                                         htmlFor="message"
                                         className="text-xs font-bold text-slate-700 uppercase tracking-wider"
                                     >
-                                        Your Message
+                                        {translate("contact.label_message")}
                                     </label>
                                     <textarea
                                         id="message"
@@ -194,7 +225,7 @@ export default function Contact() {
                                         value={formData.message}
                                         onChange={handleChange}
                                         rows="4"
-                                        placeholder="Tell us about your driving experience level..."
+                                        placeholder="..."
                                         required
                                         className="w-full px-4 py-3.5 rounded-xl bg-slate-50/50 border border-slate-200 font-medium text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none"
                                     ></textarea>
@@ -204,12 +235,12 @@ export default function Contact() {
                                     type="submit"
                                     className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-all active:scale-[0.99]"
                                 >
-                                    Send Message
+                                    {translate("contact.btn_submit")}
                                 </button>
                             </form>
                         </div>
 
-                        {/* Support details info grid block */}
+                        {/* Support Info Block */}
                         <div className="lg:col-span-5 space-y-6">
                             <a
                                 href="https://wa.me/94772339227"
@@ -223,10 +254,12 @@ export default function Contact() {
                                     </div>
                                     <div>
                                         <h4 className="font-extrabold text-slate-900 text-sm">
-                                            Instant WhatsApp Support
+                                            {translate("contact.support_title")}
                                         </h4>
                                         <p className="text-xs font-semibold text-slate-400 mt-0.5">
-                                            Chat with our coordination desk live
+                                            {translate(
+                                                "contact.support_subtitle",
+                                            )}
                                         </p>
                                     </div>
                                 </div>
@@ -234,14 +267,11 @@ export default function Contact() {
 
                             <div className="bg-indigo-50/50 rounded-2xl border border-indigo-100/80 p-6 space-y-2">
                                 <h4 className="text-xs font-bold text-indigo-900 uppercase tracking-wider flex items-center gap-1.5">
-                                    <span>📋</span> Registration Requirements
+                                    <span>📋</span>{" "}
+                                    {translate("contact.requirements_title")}
                                 </h4>
                                 <p className="text-xs font-medium text-indigo-950/70 leading-relaxed">
-                                    When visiting our campus to confirm a booked
-                                    slot, please bring your National Identity
-                                    Card (NIC) and 2 passport-sized photographs
-                                    to quickly process your RMV medical document
-                                    file.
+                                    {translate("contact.requirements_desc")}
                                 </p>
                             </div>
                         </div>

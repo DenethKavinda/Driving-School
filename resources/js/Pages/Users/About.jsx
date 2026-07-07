@@ -1,9 +1,25 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../Components/Header";
 import Footer from "../../Components/Footer";
+// Import the native path lookups helper
+import { t } from "../../translations/index";
 
 export default function About() {
+    // Determine initial language from local storage fallback to English
+    const [currentLang, setCurrentLang] = useState(() => {
+        return localStorage.getItem("app_lang") || "en";
+    });
+
+    // Dynamic clean shortcut translation handler
+    const translate = (path) => t(path, currentLang);
+
     useEffect(() => {
+        // Listen to storage changes to keep state synced cleanly across views
+        const handleLangChange = () => {
+            setCurrentLang(localStorage.getItem("app_lang") || "en");
+        };
+        window.addEventListener("storage", handleLangChange);
+
         // Scroll reveal animation engine
         const reveals = document.querySelectorAll(".reveal-on-scroll");
         const observer = new IntersectionObserver(
@@ -17,27 +33,34 @@ export default function About() {
             { threshold: 0.15 },
         );
         reveals.forEach((el) => observer.observe(el));
-        return () => observer.disconnect();
+
+        return () => {
+            observer.disconnect();
+            window.removeEventListener("storage", handleLangChange);
+        };
     }, []);
 
     return (
         <div className="bg-dot-pattern text-slate-800 antialiased min-h-screen flex flex-col justify-between">
             <style>{`
-        .bg-dot-pattern {
-            background-color: #fafbfc;
-            background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
-            background-size: 24px 24px;
-        }
-        .reveal-on-scroll {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .reveal-on-scroll.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-      `}</style>
+                .bg-dot-pattern {
+                    background-color: #fafbfc;
+                    background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
+                    background-size: 24px 24px;
+                }
+                .reveal-on-scroll {
+                    opacity: 0;
+                    transform: translateY(20px);
+                    transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+                }
+                .reveal-on-scroll.active {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+                html[lang="si"] body {
+                    line-height: 1.65 !important;
+                }
+            `}</style>
 
             <Header />
 
@@ -47,27 +70,21 @@ export default function About() {
                     <section className="grid lg:grid-cols-12 gap-12 items-center reveal-on-scroll">
                         <div className="lg:col-span-6 space-y-6">
                             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-indigo-600 border border-slate-200 shadow-sm tracking-wide uppercase transform hover:scale-105 transition-transform duration-300">
-                                🌱 Since 2026
+                                {translate("about.page_badge")}
                             </span>
                             <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-tight">
-                                What is Our{" "}
+                                {translate("about.page_title_part1")}{" "}
                                 <span className="text-indigo-600">
-                                    Learnerce?
+                                    {translate("about.page_title_part2")}
                                 </span>
                             </h1>
                             <p className="text-sm font-medium text-slate-600 leading-relaxed">
-                                Learnerce is a premium, modern driving education
-                                center established to transform the way
-                                beginners learn to navigate the roads. We don't
-                                just prepare you to pass your driving test; we
-                                combine advanced psychological safety routing
-                                with custom simulator infrastructure to instill
-                                lifetime defensive driving instincts.
+                                {translate("about.page_desc")}
                             </p>
 
                             <div className="space-y-4 pt-2">
                                 <h3 className="text-xs font-bold text-indigo-600 uppercase tracking-widest">
-                                    Why Choose Us
+                                    {translate("about.section_why")}
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all duration-300 transform hover:-translate-y-1 h-auto min-h-[140px]">
@@ -75,12 +92,10 @@ export default function About() {
                                             <span className="text-indigo-500">
                                                 ✨
                                             </span>{" "}
-                                            Patient Methodology
+                                            {translate("about.card1_title")}
                                         </h4>
                                         <p className="text-xs font-medium text-slate-500 mt-1">
-                                            Calm, structured 1-on-1 programs
-                                            engineered specifically for absolute
-                                            beginners and nervous drivers.
+                                            {translate("about.card1_desc")}
                                         </p>
                                     </div>
                                     <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all duration-300 transform hover:-translate-y-1 h-auto min-h-[140px]">
@@ -88,12 +103,10 @@ export default function About() {
                                             <span className="text-emerald-500">
                                                 📈
                                             </span>{" "}
-                                            Elite Pass Rate
+                                            {translate("about.card2_title")}
                                         </h4>
-                                        <p class="text-xs font-medium text-slate-500 mt-1">
-                                            Over 98% of our students clear their
-                                            official trial license logs on their
-                                            very first practical trial date.
+                                        <p className="text-xs font-medium text-slate-500 mt-1">
+                                            {translate("about.card2_desc")}
                                         </p>
                                     </div>
                                 </div>
@@ -119,20 +132,16 @@ export default function About() {
                     <section className="bg-white rounded-3xl border border-slate-200/80 p-8 md:p-12 shadow-md shadow-slate-100/60 grid lg:grid-cols-12 gap-8 items-center reveal-on-scroll hover:shadow-xl transition-all duration-500">
                         <div className="lg:col-span-5 space-y-4">
                             <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-                                How We Train
+                                {translate("about.video_title")}
                             </h2>
                             <p className="text-sm font-medium text-slate-600 leading-relaxed">
-                                Take a comprehensive digital walk-through of our
-                                training execution roadmap. Watch how we combine
-                                high-fidelity laboratory driving simulators with
-                                isolated dual-control track practice before
-                                stepping onto real highway junctions.
+                                {translate("about.video_desc")}
                             </p>
                             <div
                                 className="inline-flex items-center gap-2 text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl animate-bounce"
                                 style={{ animationDuration: "3s" }}
                             >
-                                <span>▶</span> 4-Minute Strategy Video
+                                <span>▶</span> {translate("about.video_badge")}
                             </div>
                         </div>
                         <div className="lg:col-span-7">
@@ -153,26 +162,21 @@ export default function About() {
                     <section className="grid lg:grid-cols-12 gap-8 items-center border-t border-slate-200/60 pt-16 reveal-on-scroll">
                         <div className="lg:col-span-4 space-y-4 text-center lg:text-left">
                             <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-                                Visit Our Headquarters
+                                {translate("about.map_title")}
                             </h2>
                             <p className="text-sm font-medium text-slate-600 leading-relaxed">
-                                Our main operational branch and lecture
-                                classrooms are structured right in the heart of
-                                Godigamuwa. Stop by to view our simulator rooms
-                                or to easily process your documentation
-                                paperwork.
+                                {translate("about.map_desc")}
                             </p>
                             <div className="text-xs font-semibold text-slate-500 space-y-1.5 inline-block text-left p-4 bg-white rounded-2xl border border-slate-100 shadow-inner">
                                 <p className="text-slate-900 font-bold flex items-center gap-1.5">
                                     <span className="inline-block w-2 h-2 rounded-full bg-indigo-600"></span>{" "}
-                                    Main Address Office:
+                                    {translate("about.map_label")}
                                 </p>
-                                <p className="pl-3.5">
+                                <p className="pl-3.5 notranslate">
                                     No 15, Udugampola Road, Naiwala
                                 </p>
                                 <p className="pt-1 pl-3.5 text-slate-400 font-medium italic">
-                                    Located adjacent to the iconic M.B. Ground
-                                    complex.
+                                    {translate("about.map_hint")}
                                 </p>
                             </div>
                         </div>
