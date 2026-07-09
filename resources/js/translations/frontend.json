@@ -340,6 +340,97 @@
     }
   },
 
+  "contact": {
+    "page_badge": {
+      "en": "✉️ Get In Touch",
+      "si": "✉️ අප හා සම්බන්ධ වන්න"
+    },
+    "page_title_part1": {
+      "en": "We're Here to",
+      "si": "ආරක්ෂිතව රිය පැදවීමට"
+    },
+    "page_title_part2": {
+      "en": "Help You Drive",
+      "si": "අපි ඔබට මඟ පෙන්වන්නෙමු"
+    },
+    "page_desc": {
+      "en": "Have questions about our training metrics, scheduling hours, or license processing? Drop us a message or contact us directly.",
+      "si": "අපගේ පුහුණු ක්‍රමවේද, පුහුණු වේලාවන් හෝ රියදුරු බලපත්‍ර ලියාපදිංචි කටයුතු පිළිබඳව ගැටලු පවතීද? අපට පණිවිඩයක් එවන්න නැතහොත් සෘජුවම සම්බන්ධ වන්න."
+    },
+    "form_heading": {
+      "en": "Send Us a Message",
+      "si": "අපට පණිවිඩයක් එවන්න"
+    },
+    "label_name": {
+      "en": "Full Name",
+      "si": "සම්පූර්ණ නම"
+    },
+    "label_email": {
+      "en": "Email Address",
+      "si": "විද්‍යුත් තැපෑල (Email)"
+    },
+    "label_phone": {
+      "en": "Contact Number",
+      "si": "දුරකථන අංකය"
+    },
+    "label_vehicle": {
+      "en": "Interested Vehicle Category",
+      "si": "ඔබ පුහුණු වීමට බලාපොරොත්තු වන වාහන කාණ්ඩය"
+    },
+    "label_message": {
+      "en": "Your Message",
+      "si": "ඔබගේ පණිවිඩය"
+    },
+    "opt_placeholder": {
+      "en": "Select a category",
+      "si": "වාහන කාණ්ඩයක් තෝරන්න"
+    },
+    "opt_car_auto": {
+      "en": "Light Vehicle (Car - Auto)",
+      "si": "සැහැල්ලු වාහන (මෝටර් රථ - ඔටෝ)"
+    },
+    "opt_car_manual": {
+      "en": "Light Vehicle (Car - Manual)",
+      "si": "සැහැල්ලු වාහන (මෝටර් රථ - මැනුවල්)"
+    },
+    "opt_dual_combo": {
+      "en": "Dual Combo (Car + Motorbike)",
+      "si": "ද්විත්ව පැකේජය (මෝටර් රථ + මෝටර් සයිකල්)"
+    },
+    "opt_express": {
+      "en": "Express Exam Refresher Track",
+      "si": "විභාගය සඳහා වන කඩිනම් පුහුණුව"
+    },
+    "btn_submit": {
+      "en": "Send Message",
+      "si": "පණිවිඩය යොමු කරන්න"
+    },
+    "support_title": {
+      "en": "Instant WhatsApp Support",
+      "si": "ක්ෂණික වට්ස්ඇප් (WhatsApp) සහාය"
+    },
+    "support_subtitle": {
+      "en": "Chat with our coordination desk live",
+      "si": "අපගේ සම්බන්ධීකරණ නිලධාරීන් සමඟ සජීවීව සම්බන්ධ වන්න"
+    },
+    "requirements_title": {
+      "en": "Registration Requirements",
+      "si": "ලියාපදිංචිය සඳහා අවශ්‍ය දෑ"
+    },
+    "requirements_desc": {
+      "en": "When visiting our campus to confirm a booked slot, please bring your National Identity Card (NIC) and 2 passport-sized photographs to quickly process your RMV medical document file.",
+      "si": "වෙන් කරවා ගත් පුහුණු කාලසටහන තහවුරු කර ගැනීමට පැමිණෙන විට, ඔබගේ RMV වෛද්‍ය වාර්තා කටයුතු කඩිනමින් සිදු කර ගැනීම සඳහා ජාතික හැඳුනුම්පත (NIC) සහ පැස්පෝර්ට් ප්‍රමාණයේ (Passport-sized) ඡායාරූප 2ක් රැගෙන එන්න."
+    },
+    "alert_success_prefix": {
+      "en": "Thank you",
+      "si": "ස්තූතියි"
+    },
+    "alert_success_suffix": {
+      "en": "Your driving layout message query has been safely submitted.",
+      "si": "ඔබගේ පණිවිඩය සාර්ථකව අප වෙත ලැබී ඇත."
+    }
+  },
+
   "exam": {
     "page_badge": {
       "en": "📝 Official Mock Evaluation",
